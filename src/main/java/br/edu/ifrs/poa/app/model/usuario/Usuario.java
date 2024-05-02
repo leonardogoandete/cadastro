@@ -1,5 +1,6 @@
 package br.edu.ifrs.poa.app.model.usuario;
 
+import br.edu.ifrs.poa.app.enums.Role;
 import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,8 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
-import java.util.UUID;
-import java.util.random.RandomGenerator;
 
 @Entity
 @Data
@@ -25,6 +24,8 @@ public class Usuario{
     private String email;
     private byte[] salt;
     private String senha;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     private byte[] gerarSalt(){
         byte[] salt = new byte[8];
@@ -36,12 +37,13 @@ public class Usuario{
         return sb.toString().getBytes(StandardCharsets.UTF_8);
     }
 
-    public Usuario(String nome, String cpf, String email, String senha) {
+    public Usuario(String nome, String cpf, String email, String senha, Role role) {
         this.nome = nome;
         this.cpf = cpf;
         this.email = email;
         this.salt = gerarSalt();
         this.senha = hashSenha(senha, this.salt);
+        this.role = role;
     }
 
 

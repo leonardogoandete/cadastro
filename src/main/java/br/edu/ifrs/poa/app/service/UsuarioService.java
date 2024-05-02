@@ -1,5 +1,6 @@
 package br.edu.ifrs.poa.app.service;
 
+import br.edu.ifrs.poa.app.enums.Role;
 import br.edu.ifrs.poa.app.model.usuario.Usuario;
 import br.edu.ifrs.poa.app.repository.UsuarioRepository;
 import io.quarkus.elytron.security.common.BcryptUtil;
@@ -8,7 +9,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -19,7 +19,7 @@ public class UsuarioService{
     UsuarioRepository usuarioRepository;
 
     public void cadastrarUsuario(String nome, String cpf, String email, String senha){
-        usuarioRepository.persist(new Usuario(nome, cpf, email, senha));
+        usuarioRepository.persist(new Usuario(nome, cpf, email, senha, Role.USUARIO));
     }
 
 
@@ -38,10 +38,10 @@ public class UsuarioService{
     }
 
     private String gerarToken(String cpf) {
-        return Jwt.issuer("https://localhost:8080")
+        return Jwt.issuer("https://localhost:8081")
                 .upn(cpf)
-                //.groups(new HashSet<>(Arrays.asList("user", "admin")))
-                //.claim("scope", "user")
+                .groups("USUARIO")
+                .expiresAt(System.currentTimeMillis() + 3600)
                 .innerSign()
                 .encrypt();
     }
